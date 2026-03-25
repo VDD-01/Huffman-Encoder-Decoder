@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Huffman Compressor</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>Huffman File Compressor & Decompressor</h1>
+    </header>
+
+    <section class="grid">
+      <div class="panel">
+        <h2>Compress</h2>
+        <p class="muted">Upload a file to compress and download the result.</p>
+        <label class="file-input">
+          <input id="compress-input" type="file" />
+          <span class="file-label">Select file</span>
+          <span id="compress-name" class="file-name">No file selected</span>
+        </label>
+        <button id="compress-btn" class="primary" disabled>Compress</button>
+        <div id="compress-result" class="result hidden">
+          <div class="result-row">
+            <span>Compressed size</span>
+            <strong id="compress-size">—</strong>
+          </div>
+          <a id="compress-download" class="download" download>Download compressed file</a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Decompress</h2>
+        <p class="muted">Upload a compressed file to restore and download.</p>
+        <label class="file-input">
+          <input id="decompress-input" type="file" />
+          <span class="file-label">Select file</span>
+          <span id="decompress-name" class="file-name">No file selected</span>
+        </label>
+        <button id="decompress-btn" class="primary" disabled>Decompress</button>
+        <div id="decompress-result" class="result hidden">
+          <div class="result-row">
+            <span>Decompressed size</span>
+            <strong id="decompress-size">—</strong>
+          </div>
+          <a id="decompress-download" class="download" download>Download decompressed file</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
