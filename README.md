@@ -2,17 +2,6 @@
 
 A simple Huffman + LZ77 file compressor with a minimal web UI.
 
-## Repo Layout
-
-```
-Huffman encoder/
-├─ include/          # Header files
-├─ src/              # C++ sources
-├─ web/              # Frontend (HTML/CSS/JS)
-├─ server/           # Flask backend
-├─ README.md
-```
-
 ## Build (C++ executable)
 
 From the repo root:
