@@ -1,6 +1,6 @@
 # Huffman Encoder/Decoder (C++)
 
-A simple Huffman + LZ77 file compressor with a minimal web UI.
+A simple Huffman + LZ77 file compressor with a web UI.
 
 ## Build (C++ executable)
 
