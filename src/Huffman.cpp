@@ -10,6 +10,8 @@
 
 using namespace std;
 
+//move transfers the ownership of the resource(node) from one uniq_ptr to another
+
 namespace Huffman {
 
 Node::Node(uint64_t f, int s) : freq(f), symbol(s) {}
@@ -22,16 +24,19 @@ bool Node::isLeaf() const {
 
 struct NodeCompare {
     bool operator()(const unique_ptr<Node>& a, const unique_ptr<Node>& b) const {
-        return a->freq > b->freq;
+        return a->freq > b->freq;   //condition for min heap
     }
 };
 
 static unique_ptr<Node> buildTree(const array<uint64_t, 256>& freqs) {
     priority_queue<unique_ptr<Node>, vector<unique_ptr<Node>>, NodeCompare> pq;
+    //arg1: type of elements in pq
+    //arg2: underlying container
+    //arg3: comparing condition
 
     for (int i = 0; i < 256; ++i) {
         if (freqs[i] > 0) {
-            pq.push(make_unique<Node>(freqs[i], i));
+            pq.push(make_unique<Node>(freqs[i], i));   //make_unique is used to create a unique_ptr to a new Node object
         }
     }
 
@@ -46,8 +51,9 @@ static unique_ptr<Node> buildTree(const array<uint64_t, 256>& freqs) {
         return make_unique<Node>(only->freq, move(only), move(dummy));
     }
 
-    while (pq.size() > 1) {
+    while (pq.size() > 1) {//extracting the two nodes with the smallest frequencies and merging them
         auto left = move(const_cast<unique_ptr<Node>&>(pq.top()));
+        //const_cast is used to remove the constness of the top element of the priority queue (pq always returns a const reference to the top element)
         pq.pop();
         auto right = move(const_cast<unique_ptr<Node>&>(pq.top()));
         pq.pop();
@@ -60,40 +66,48 @@ static unique_ptr<Node> buildTree(const array<uint64_t, 256>& freqs) {
     return root;
 }
 
+
+//codes is the lookup table for the huffman codes
+//this method performs recursive dfs to build codes
+//codes array is just adjacency lists of the huffman tree
 static void buildCodes(const Node* node, vector<bool>& path, array<vector<bool>, 256>& codes) {
     if (!node) return;
 
     if (node->isLeaf()) {
         if (node->symbol >= 0) {
-            codes[static_cast<size_t>(node->symbol)] = path;
+            codes[static_cast<size_t>(node->symbol)] = path;   //static cast is used for safe type conversion
         }
         return;
     }
 
     path.push_back(false);
     buildCodes(node->left.get(), path, codes);
-    path.pop_back();
+    path.pop_back(); //this is backtracking- removing the last 0 cz we have reached the leftmost null node in dfs
 
     path.push_back(true);
     buildCodes(node->right.get(), path, codes);
-    path.pop_back();
+    path.pop_back(); //this is backtracking- removing the last 1 cz we have reached the rightmost null node in dfs
 }
 
 static bool writeHeader(ofstream& out, uint64_t originalSize, uint64_t lzSize, const array<uint64_t, 256>& freqs) {
-    const char magic[4] = {'H', 'F', 'Z', '1'};
+    const char magic[4] = {'M', 'I', 'T', '1'};
     out.write(magic, 4);
-    out.write(reinterpret_cast<const char*>(&originalSize), sizeof(originalSize));
+    out.write(reinterpret_cast<const char*>(&originalSize), sizeof(originalSize));//forced type conversion
+    //out.write() expects a const char* as the first argument but originalSize is a uint64_t so we reinterpret_cast it to const char*
     out.write(reinterpret_cast<const char*>(&lzSize), sizeof(lzSize));
     for (uint64_t f : freqs) {
         out.write(reinterpret_cast<const char*>(&f), sizeof(uint64_t));
     }
     return static_cast<bool>(out);
+    //If the file was written to successfully, the stream stays in a "good" state and returns true
 }
+
+//header contains the 4byte magic code, 8byte original size, 8byte lz size, 256*8byte frequency table
 
 static bool readHeader(ifstream& in, uint64_t& originalSize, uint64_t& lzSize, array<uint64_t, 256>& freqs) {
     char magic[4];
     in.read(magic, 4);
-    if (!in || magic[0] != 'H' || magic[1] != 'F' || magic[2] != 'Z' || magic[3] != '1') {
+    if (!in || magic[0] != 'M' || magic[1] != 'I' || magic[2] != 'T' || magic[3] != '1') {
         return false;
     }
     in.read(reinterpret_cast<char*>(&originalSize), sizeof(originalSize));

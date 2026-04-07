@@ -5,8 +5,8 @@
 #include <fstream>
 #include <vector>
 
-
-class BitWriter {
+//works after huffman code generation of each character
+class BitWriter {   //class to write huffman codes as bits to a file
 public:
     explicit BitWriter(std::ofstream& o);
     void writeBit(bool bit);
